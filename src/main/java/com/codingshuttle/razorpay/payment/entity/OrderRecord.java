@@ -1,12 +1,15 @@
 package com.codingshuttle.razorpay.payment.entity;
 
 import com.codingshuttle.razorpay.common.entity.Money;
+import com.codingshuttle.razorpay.common.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -26,5 +29,16 @@ public class OrderRecord {
     private UUID merchantId;
 
     @Embedded
+    @Column(nullable = false, length = 100)
     private Money amount;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus = OrderStatus.CREATED;
+
+    @Column(nullable = false)
+    private Integer attempts = 0;
+
+    @JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> notes;
 }
