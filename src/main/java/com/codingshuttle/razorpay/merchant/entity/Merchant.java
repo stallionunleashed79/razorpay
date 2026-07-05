@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -43,6 +45,9 @@ public class Merchant extends BaseAuditEntity {
 
     @Column(nullable = false, length = 20)
     private MerchantStatus status = MerchantStatus.PENDING_KYC;
+
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AppUser> employees = new ArrayList<>();
 
     @Column(length = 20)
     private String gstId;
