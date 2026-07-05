@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -41,4 +42,7 @@ public class OrderRecord {
     @JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> notes;
+
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt;
 }
