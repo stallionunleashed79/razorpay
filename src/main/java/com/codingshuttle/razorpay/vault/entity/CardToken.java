@@ -22,7 +22,7 @@ public class CardToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, length=50)
+    @Column(nullable = false, length=50, unique = true)
     private String token;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
