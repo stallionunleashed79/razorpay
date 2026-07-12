@@ -54,6 +54,8 @@ public class Merchant extends BaseAuditEntity {
 
     @Column(length = 20)
     private String panId;
+
+    @Column(length = 20)
     private String settlementBankAccount;
 
     @Column(length = 20)
