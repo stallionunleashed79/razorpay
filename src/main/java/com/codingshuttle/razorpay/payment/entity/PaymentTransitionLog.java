@@ -29,8 +29,9 @@ public class PaymentTransitionLog {
     @Column(nullable = false, name = "to_status", length = 30)
     private PaymentStatus toStatus;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "actor", nullable = false, length = 30)
-    private String actor;
+    private PaymentActor actor;
 
     @Column(name = "occured_at", nullable = false)
     private LocalDateTime occuredAt;
