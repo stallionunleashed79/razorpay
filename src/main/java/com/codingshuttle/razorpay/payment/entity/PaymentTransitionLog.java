@@ -3,10 +3,20 @@ package com.codingshuttle.razorpay.payment.entity;
 
 import com.codingshuttle.razorpay.common.enums.PaymentStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "payment_transition_log")
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PaymentTransitionLog {
 
     @Id
