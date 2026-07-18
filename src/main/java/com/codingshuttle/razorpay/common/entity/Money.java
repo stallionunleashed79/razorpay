@@ -15,20 +15,20 @@ import java.util.Currency;
 @Embeddable
 public class Money {
 
-    private int amountUtils;
+    private int amountUnits;
     private Currency currency;
 
     public Money add(Money money) {
        if (!this.currency.equals(money.currency)) {
            throw new IllegalArgumentException("Currency mismatch");
        }
-       return new Money(this.amountUtils + money.amountUtils, this.currency);
+       return new Money(this.amountUnits + money.amountUnits, this.currency);
     }
 
     public Money subtract(Money money) {
         if (!this.currency.equals(money.currency)) {
             throw new IllegalArgumentException("Currency mismatch");
         }
-        return new Money(this.amountUtils - money.amountUtils, this.currency);
+        return new Money(this.amountUnits - money.amountUnits, this.currency);
     }
 }
