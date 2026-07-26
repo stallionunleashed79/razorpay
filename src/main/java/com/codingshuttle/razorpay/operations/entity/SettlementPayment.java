@@ -1,6 +1,5 @@
 package com.codingshuttle.razorpay.operations.entity;
 
-import com.codingshuttle.razorpay.payment.entity.Payment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,14 +17,9 @@ public class SettlementPayment {
     @EmbeddedId
     private SettlementPaymentId settlementPaymentId;
 
-    @MapsId("settlementId")
+    @MapsId()
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "settlement_id", nullable = false)
     private Settlement settlement;
-
-    @MapsId("paymentId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "payment_id", nullable = false)
-    private Payment payment;
 
 }
