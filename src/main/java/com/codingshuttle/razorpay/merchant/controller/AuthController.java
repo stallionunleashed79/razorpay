@@ -19,7 +19,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<MerchantResponse> signup(@RequestBody @Valid MerchantSignupRequest merchantSignupRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(merchantSignupRequest));
     }
