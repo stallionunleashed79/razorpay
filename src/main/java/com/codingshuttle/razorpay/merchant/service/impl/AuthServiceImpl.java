@@ -2,6 +2,7 @@ package com.codingshuttle.razorpay.merchant.service.impl;
 
 import com.codingshuttle.razorpay.common.enums.MerchantStatus;
 import com.codingshuttle.razorpay.common.enums.UserRole;
+import com.codingshuttle.razorpay.common.exception.DuplicateResourceException;
 import com.codingshuttle.razorpay.merchant.dto.request.MerchantSignupRequest;
 import com.codingshuttle.razorpay.merchant.dto.response.MerchantResponse;
 import com.codingshuttle.razorpay.merchant.entity.AppUser;
@@ -12,6 +13,7 @@ import com.codingshuttle.razorpay.merchant.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +29,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public @Nullable MerchantResponse signup(final MerchantSignupRequest merchantSignupRequest) {
         if (merchantRepository.existsByEmail(merchantSignupRequest.email())) {
-            throw new RuntimeException(String.format("Email %s already exists", merchantSignupRequest.email()));
+            throw new DuplicateResourceException("DUPLICATE_MERCHANT", String.format("Email %s already exists", merchantSignupRequest.email()));
         }
+
         Merchant merchant = Merchant.builder()
                 .name(merchantSignupRequest.name())
                 .email(merchantSignupRequest.email())
