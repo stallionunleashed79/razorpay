@@ -4,6 +4,7 @@ import com.codingshuttle.razorpay.common.exception.ResourceNotFoundException;
 import com.codingshuttle.razorpay.common.util.RandomizerUtil;
 import com.codingshuttle.razorpay.merchant.dto.request.CreateApiKeyRequest;
 import com.codingshuttle.razorpay.merchant.dto.response.ApiKeyCreateResponse;
+import com.codingshuttle.razorpay.merchant.dto.response.ApiKeyResponse;
 import com.codingshuttle.razorpay.merchant.dto.response.MerchantResponse;
 import com.codingshuttle.razorpay.merchant.entity.ApiKey;
 import com.codingshuttle.razorpay.merchant.entity.Merchant;
@@ -13,6 +14,7 @@ import com.codingshuttle.razorpay.merchant.service.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -46,4 +48,18 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .environment(apiKey.getEnvironment().name().toLowerCase(Locale.ROOT))
                 .build();
     }
+
+    @Override
+    public List<ApiKeyResponse> getByMerchantId(UUID merchantId) {
+        final Merchant merchant = merchantRepository.findById(merchantId)
+                .orElseThrow(() -> new ResourceNotFoundException("merchant", merchantId));
+             return apiKeyRepository.findByMerchant(merchant).stream()
+                .map(apiKey -> ApiKeyResponse.builder()
+                        .id(apiKey.getId())
+                        .keyId(apiKey.getKeyId())
+                        .merchantId(apiKey.getMerchant().getId())
+                        .environment(apiKey.getEnvironment())
+                        .lastUsedAt(apiKey.getLastUsedAt())
+                        .build())
+                .toList();}
 }
