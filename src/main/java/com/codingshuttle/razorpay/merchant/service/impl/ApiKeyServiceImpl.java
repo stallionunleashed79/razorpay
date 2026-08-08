@@ -60,6 +60,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                         .merchantId(apiKey.getMerchant().getId())
                         .environment(apiKey.getEnvironment())
                         .lastUsedAt(apiKey.getLastUsedAt())
+                        .createdAt(apiKey.getCreatedAt())
                         .build())
                 .toList();}
 }

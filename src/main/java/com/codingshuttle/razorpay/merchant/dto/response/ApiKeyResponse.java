@@ -12,5 +12,6 @@ public record ApiKeyResponse(
         String keyId,
         UUID merchantId,
         Environment environment,
-        LocalDateTime lastUsedAt) {
+        LocalDateTime lastUsedAt,
+        LocalDateTime createdAt) {
 }
