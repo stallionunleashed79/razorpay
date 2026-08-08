@@ -36,6 +36,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .keySecretHash(keySecret)
                 .environment(createApiKeyRequest.environment())
                 .merchant(merchant)
+                .enabled(true)
                 .build();
         apiKey = apiKeyRepository.save(apiKey);
         return ApiKeyCreateResponse.builder()
