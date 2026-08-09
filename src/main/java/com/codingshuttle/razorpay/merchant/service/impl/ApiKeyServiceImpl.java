@@ -5,7 +5,6 @@ import com.codingshuttle.razorpay.common.util.RandomizerUtil;
 import com.codingshuttle.razorpay.merchant.dto.request.CreateApiKeyRequest;
 import com.codingshuttle.razorpay.merchant.dto.response.ApiKeyCreateResponse;
 import com.codingshuttle.razorpay.merchant.dto.response.ApiKeyResponse;
-import com.codingshuttle.razorpay.merchant.dto.response.MerchantResponse;
 import com.codingshuttle.razorpay.merchant.entity.ApiKey;
 import com.codingshuttle.razorpay.merchant.entity.Merchant;
 import com.codingshuttle.razorpay.merchant.repository.ApiKeyRepository;
@@ -63,4 +62,17 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                         .createdAt(apiKey.getCreatedAt())
                         .build())
                 .toList();}
+
+    @Override
+    public void revoke(UUID merchantId, UUID apiKeyId) {
+        final Merchant merchant = merchantRepository.findById(merchantId)
+                .orElseThrow(() -> new ResourceNotFoundException("merchant", merchantId));
+        final ApiKey apiKey = apiKeyRepository.findById(apiKeyId)
+                .orElseThrow(() -> new ResourceNotFoundException("api_key", apiKeyId));
+        if (!apiKey.getMerchant().getId().equals(merchant.getId())) {
+            throw new ResourceNotFoundException("api_key", apiKeyId);
+        }
+        apiKey.setEnabled(false);
+        apiKeyRepository.save(apiKey);
+    }
 }
