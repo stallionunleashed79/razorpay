@@ -28,6 +28,9 @@ public class ApiKey extends BaseAuditEntity {
     private String keyId;
 
     @Column(nullable = false, length = 200, unique = true)
+    private String previousKeySecretHash;;
+
+    @Column(nullable = false, length = 200, unique = true)
     private String keySecretHash;
 
     @Column(length = 50)
