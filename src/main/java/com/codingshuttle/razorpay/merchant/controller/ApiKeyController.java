@@ -31,4 +31,15 @@ public class ApiKeyController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 apiKeyService.getByMerchantId(merchantId));
     }
+
+    @PostMapping
+    public void revoke(@PathVariable UUID merchantId, @PathVariable UUID keyId) {
+        apiKeyService.revoke(merchantId, keyId);
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiKeyCreateResponse> getByMerchantId(@PathVariable UUID merchantId, @PathVariable UUID keyId) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                apiKeyService.rotate(merchantId, keyId));
+    }
 }
