@@ -76,7 +76,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         final ApiKey apiKey = validateApiKey(merchantId, apiKeyId);
         apiKey.setPreviousKeySecretHash(apiKey.getKeySecretHash());
         final String keySecret = RandomizerUtil.randomBase64(40);
-             apiKey.setKeySecretHash(keySecret);
+        apiKey.setKeySecretHash(keySecret);
         apiKey.setRotatedAt(LocalDateTime.now());
         apiKey.setGracePeriodExpiresAt(LocalDateTime.now().plusHours(24));
         apiKeyRepository.save(apiKey);
