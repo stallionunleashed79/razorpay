@@ -12,6 +12,7 @@ import com.codingshuttle.razorpay.merchant.repository.MerchantRepository;
 import com.codingshuttle.razorpay.merchant.service.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -65,6 +66,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .toList();}
 
     @Override
+    @Transactional
     public void revoke(final UUID merchantId, final UUID apiKeyId) {
         final ApiKey apiKey = validateApiKey(merchantId, apiKeyId);
         apiKey.setEnabled(false);
@@ -72,6 +74,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     }
 
     @Override
+    @Transactional
     public ApiKeyCreateResponse rotate(final UUID merchantId, final UUID apiKeyId) {
         final ApiKey apiKey = validateApiKey(merchantId, apiKeyId);
         apiKey.setPreviousKeySecretHash(apiKey.getKeySecretHash());
