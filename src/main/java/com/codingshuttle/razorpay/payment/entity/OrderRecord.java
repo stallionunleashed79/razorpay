@@ -39,6 +39,9 @@ public class OrderRecord {
     @Column(nullable = false)
     private Integer attempts = 0;
 
+    @Column(length = 100)
+    private String receipt;
+
     @JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> notes;
