@@ -42,6 +42,7 @@ public class Merchant extends BaseAuditEntity {
     private String websiteUrl;
 
     @Column(nullable = false, length = 20)
+    @Builder.Default
     private MerchantStatus status = MerchantStatus.PENDING_KYC;
 
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)

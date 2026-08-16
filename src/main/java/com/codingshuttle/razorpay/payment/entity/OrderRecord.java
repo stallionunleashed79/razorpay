@@ -34,9 +34,11 @@ public class OrderRecord {
     private Money amount;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private OrderStatus orderStatus = OrderStatus.CREATED;
 
     @Column(name = "attempts")
+    @Builder.Default
     private Integer attempts = 0;
 
     @Column(length = 100)

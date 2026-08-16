@@ -39,6 +39,7 @@ public class Refund {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
+    @Builder.Default
     private RefundStatus refundStatus = RefundStatus.PENDING;
 
     @Column(length = 100)

@@ -44,6 +44,7 @@ public class WebhookEvent {
     private WebhookEventStatus webhookEventStatus;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer attempts = 0;
 
     private LocalDateTime nextRetryAt;
