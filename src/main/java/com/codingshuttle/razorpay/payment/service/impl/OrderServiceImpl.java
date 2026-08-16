@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private int defaultOrderExpiryMinutes;
 
     @Override
-    public OrderResponse create(UUID merchantId, CreateOrderRequest request) {
+    public OrderResponse create(final UUID merchantId, final CreateOrderRequest request) {
         if (StringUtils.isNotEmpty(request.receipt()) && orderRepository.existsByMerchantIdAndReceipt(merchantId, request.receipt())) {
             throw new IllegalArgumentException("Order with the same receipt already exists for this merchant.");
         }
