@@ -32,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Order with the same receipt already exists for this merchant.");
         }
 
-        final OrderRecord orderRecord = OrderRecord.builder()
+        OrderRecord orderRecord = OrderRecord.builder()
                 .merchantId(merchantId)
                 .amount(request.amount())
                 .receipt(request.receipt())
@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
                 .expiresAt(request.expiresAt() != null ? request.expiresAt() : LocalDateTime.now().plusMinutes(
                         defaultOrderExpiryMinutes))
                 .build();
-        orderRepository.save(orderRecord);
+        orderRecord = orderRepository.save(orderRecord);
 
         //TODO: SEND KAFKA EVENT THAT ORDER IS CREATED
         return OrderResponse.builder()
