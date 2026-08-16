@@ -36,7 +36,7 @@ public class OrderRecord {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.CREATED;
 
-    @Column(nullable = false)
+    @Column(name = "attempts")
     private Integer attempts = 0;
 
     @Column(length = 100)
