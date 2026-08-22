@@ -83,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.findByIdAndMerchantId(orderId, merchantId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found for the given merchant and order ID."));
         final List<Payment> payments = paymentRepository.findByOrder_Id(orderId);
-        return payments.stream().map(paymentMapper::toPaymentResponse).toList();
+        return paymentMapper.toPaymentResponseList(payments);
     }
 
     private OrderResponse buildOrderResponse(OrderRecord orderRecord) {
