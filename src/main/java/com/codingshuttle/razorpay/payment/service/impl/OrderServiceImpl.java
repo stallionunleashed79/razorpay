@@ -1,8 +1,10 @@
 package com.codingshuttle.razorpay.payment.service.impl;
 
 import com.codingshuttle.razorpay.common.enums.OrderStatus;
+import com.codingshuttle.razorpay.common.exception.BusinessRuleViolationException;
 import com.codingshuttle.razorpay.payment.dto.request.CreateOrderRequest;
 import com.codingshuttle.razorpay.payment.dto.response.OrderResponse;
+import com.codingshuttle.razorpay.payment.dto.response.PaymentResponse;
 import com.codingshuttle.razorpay.payment.entity.OrderRecord;
 import com.codingshuttle.razorpay.payment.repository.OrderRepository;
 import com.codingshuttle.razorpay.payment.service.OrderService;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -44,6 +47,36 @@ public class OrderServiceImpl implements OrderService {
         orderRecord = orderRepository.save(orderRecord);
 
         //TODO: SEND KAFKA EVENT THAT ORDER IS CREATED
+        return getOrderResponse(orderRecord);
+    }
+
+    @Override
+    public OrderResponse getById(UUID merchantId, UUID orderId) {
+        final OrderRecord orderRecord = orderRepository.findByIdAndMerchantId(orderId, merchantId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found for the given merchant and order ID."));
+        return getOrderResponse(orderRecord);
+
+    }
+
+    @Override
+    public OrderResponse cancel(UUID merchantId, UUID orderId) {
+        OrderRecord orderRecord = orderRepository.findByIdAndMerchantId(orderId, merchantId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found for the given merchant and order ID."));
+        if (orderRecord.getOrderStatus() == OrderStatus.CANCELLED || orderRecord.getOrderStatus() == OrderStatus.PAID) {
+            throw new BusinessRuleViolationException("Order cannot be cancelled as it is already " + orderRecord.getOrderStatus(),
+                    "ORDER_CANNOT_BE_CANCELLED");
+        }
+        orderRecord.setOrderStatus(OrderStatus.CANCELLED);
+        orderRecord = orderRepository.save(orderRecord);
+       return getOrderResponse(orderRecord);
+    }
+
+    @Override
+    public List<PaymentResponse> listPayments(UUID merchantId, UUID orderId) {
+        return List.of();
+    }
+
+    private OrderResponse getOrderResponse(OrderRecord orderRecord) {
         return OrderResponse.builder()
                 .id(orderRecord.getId())
                 .merchantId(orderRecord.getMerchantId())
