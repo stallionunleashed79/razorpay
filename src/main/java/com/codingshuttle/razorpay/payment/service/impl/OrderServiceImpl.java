@@ -7,6 +7,7 @@ import com.codingshuttle.razorpay.payment.dto.response.OrderResponse;
 import com.codingshuttle.razorpay.payment.dto.response.PaymentResponse;
 import com.codingshuttle.razorpay.payment.entity.OrderRecord;
 import com.codingshuttle.razorpay.payment.entity.Payment;
+import com.codingshuttle.razorpay.payment.mapper.PaymentMapper;
 import com.codingshuttle.razorpay.payment.repository.OrderRepository;
 import com.codingshuttle.razorpay.payment.repository.PaymentRepository;
 import com.codingshuttle.razorpay.payment.service.OrderService;
@@ -28,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+    private final PaymentMapper paymentMapper;
 
     @Value("${payment.order.default-expiry-minutes:30}")
     private int defaultOrderExpiryMinutes;
@@ -81,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.findByIdAndMerchantId(orderId, merchantId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found for the given merchant and order ID."));
         final List<Payment> payments = paymentRepository.findByOrder_Id(orderId);
-        return null;
+        return payments.stream().map(paymentMapper::toPaymentResponse).toList();
     }
 
     private OrderResponse buildOrderResponse(OrderRecord orderRecord) {
