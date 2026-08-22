@@ -106,6 +106,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         if (!apiKey.getMerchant().getId().equals(merchant.getId())) {
             throw new ResourceNotFoundException("api_key", apiKeyId);
         }
+        if (!apiKey.isEnabled()) {
+            throw new RuntimeException("Cannot rotate a disabled key");
+        }
         return apiKey;
     }
 }
