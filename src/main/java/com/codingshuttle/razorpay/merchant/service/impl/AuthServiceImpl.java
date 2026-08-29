@@ -33,14 +33,10 @@ public class AuthServiceImpl implements AuthService {
             throw new DuplicateResourceException("DUPLICATE_MERCHANT", String.format("Email %s already exists", merchantSignupRequest.email()));
         }
 
-        Merchant merchant = Merchant.builder()
-                .name(merchantSignupRequest.name())
-                .email(merchantSignupRequest.email())
-                .businessName(merchantSignupRequest.businessName())
-                .businessType(merchantSignupRequest.businessType())
-                .status(MerchantStatus.PENDING_KYC)
-                .build();
+        Merchant merchant = merchantMapper.toEntityFromSignupRequest(merchantSignupRequest);
+        merchant.setStatus(MerchantStatus.PENDING_KYC);
         merchant = merchantRepository.save(merchant);
+
         final AppUser appUser = AppUser.builder()
                 .email(merchantSignupRequest.email())
                 .passwordHash(merchantSignupRequest.password())
