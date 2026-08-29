@@ -7,6 +7,7 @@ import com.codingshuttle.razorpay.payment.dto.response.OrderResponse;
 import com.codingshuttle.razorpay.payment.dto.response.PaymentResponse;
 import com.codingshuttle.razorpay.payment.entity.OrderRecord;
 import com.codingshuttle.razorpay.payment.entity.Payment;
+import com.codingshuttle.razorpay.payment.mapper.OrderMapper;
 import com.codingshuttle.razorpay.payment.mapper.PaymentMapper;
 import com.codingshuttle.razorpay.payment.repository.OrderRepository;
 import com.codingshuttle.razorpay.payment.repository.PaymentRepository;
@@ -30,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
+    private final OrderMapper orderMapper;
 
     @Value("${payment.order.default-expiry-minutes:30}")
     private int defaultOrderExpiryMinutes;
@@ -53,14 +55,14 @@ public class OrderServiceImpl implements OrderService {
         orderRecord = orderRepository.save(orderRecord);
 
         //TODO: SEND KAFKA EVENT THAT ORDER IS CREATED
-        return buildOrderResponse(orderRecord);
+        return orderMapper.toResponse(orderRecord);
     }
 
     @Override
     public OrderResponse getById(UUID merchantId, UUID orderId) {
         final OrderRecord orderRecord = orderRepository.findByIdAndMerchantId(orderId, merchantId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found for the given merchant and order ID."));
-        return buildOrderResponse(orderRecord);
+        return orderMapper.toResponse(orderRecord);
 
     }
 
@@ -75,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
         }
         orderRecord.setOrderStatus(OrderStatus.CANCELLED);
         orderRepository.save(orderRecord);
-       return buildOrderResponse(orderRecord);
+       return orderMapper.toResponse(orderRecord);
     }
 
     @Override
@@ -83,19 +85,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.findByIdAndMerchantId(orderId, merchantId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found for the given merchant and order ID."));
         final List<Payment> payments = paymentRepository.findByOrder_Id(orderId);
-        return paymentMapper.toPaymentResponseList(payments);
+        return paymentMapper.toResponseList(payments);
     }
 
-    private OrderResponse buildOrderResponse(OrderRecord orderRecord) {
-        return OrderResponse.builder()
-                .id(orderRecord.getId())
-                .merchantId(orderRecord.getMerchantId())
-                .amount(orderRecord.getAmount())
-                .receipt(orderRecord.getReceipt())
-                .orderStatus(orderRecord.getOrderStatus())
-                .attempts(orderRecord.getAttempts())
-                .notes(orderRecord.getNotes())
-                .expiresAt(orderRecord.getExpiresAt())
-                .build();
-    }
 }

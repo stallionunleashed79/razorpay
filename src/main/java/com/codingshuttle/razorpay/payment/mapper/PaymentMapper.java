@@ -12,7 +12,7 @@ import java.util.List;
 public interface PaymentMapper {
 
     @Mapping(target = "orderId", source="order.id")
-    PaymentResponse toPaymentResponse(Payment payment);
+    PaymentResponse toResponse(Payment payment);
 
-    List<PaymentResponse> toPaymentResponseList(List<Payment> payments);
+    List<PaymentResponse> toResponseList(List<Payment> payments);
 }
