@@ -7,6 +7,7 @@ import com.codingshuttle.razorpay.merchant.dto.response.ApiKeyCreateResponse;
 import com.codingshuttle.razorpay.merchant.dto.response.ApiKeyResponse;
 import com.codingshuttle.razorpay.merchant.entity.ApiKey;
 import com.codingshuttle.razorpay.merchant.entity.Merchant;
+import com.codingshuttle.razorpay.merchant.mapper.ApiKeyMapper;
 import com.codingshuttle.razorpay.merchant.repository.ApiKeyRepository;
 import com.codingshuttle.razorpay.merchant.repository.MerchantRepository;
 import com.codingshuttle.razorpay.merchant.service.ApiKeyService;
@@ -26,6 +27,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     private final MerchantRepository merchantRepository;
     private final ApiKeyRepository apiKeyRepository;
+    private final ApiKeyMapper apiKeyMapper;
 
     @Override
     public ApiKeyCreateResponse create(UUID merchantId, CreateApiKeyRequest createApiKeyRequest) {
@@ -52,19 +54,12 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     }
 
     @Override
-    public List<ApiKeyResponse> getByMerchantId(UUID merchantId) {
+    public List<ApiKeyResponse> listByMerchantId(UUID merchantId) {
         final Merchant merchant = merchantRepository.findById(merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("merchant", merchantId));
-             return apiKeyRepository.findByMerchant(merchant).stream()
-                .map(apiKey -> ApiKeyResponse.builder()
-                        .id(apiKey.getId())
-                        .keyId(apiKey.getKeyId())
-                        .merchantId(apiKey.getMerchant().getId())
-                        .environment(apiKey.getEnvironment())
-                        .lastUsedAt(apiKey.getLastUsedAt())
-                        .createdAt(apiKey.getCreatedAt())
-                        .build())
-                .toList();}
+        final List<ApiKey> apiKeyList = apiKeyRepository.findByMerchant(merchant);
+        return apiKeyMapper.toResponseList(apiKeyList);
+    }
 
     @Override
     @Transactional

@@ -7,6 +7,7 @@ import com.codingshuttle.razorpay.merchant.dto.request.MerchantSignupRequest;
 import com.codingshuttle.razorpay.merchant.dto.response.MerchantResponse;
 import com.codingshuttle.razorpay.merchant.entity.AppUser;
 import com.codingshuttle.razorpay.merchant.entity.Merchant;
+import com.codingshuttle.razorpay.merchant.mapper.MerchantMapper;
 import com.codingshuttle.razorpay.merchant.repository.AppUserRepository;
 import com.codingshuttle.razorpay.merchant.repository.MerchantRepository;
 import com.codingshuttle.razorpay.merchant.service.AuthService;
@@ -23,6 +24,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final MerchantRepository merchantRepository;
     private final AppUserRepository appUserRepository;
+    private final MerchantMapper merchantMapper;
 
     @Override
     @Transactional
@@ -46,13 +48,6 @@ public class AuthServiceImpl implements AuthService {
                 .merchant(merchant)
                 .build();
         appUserRepository.save(appUser);
-        return MerchantResponse.builder()
-                .id(merchant.getId())
-                .name(merchant.getName())
-                .email(merchant.getEmail())
-                .businessName(merchant.getBusinessName())
-                .businessType(merchant.getBusinessType())
-                .merchantStatus(merchant.getStatus())
-                .build();
+        return merchantMapper.toResponse(merchant);
     }
 }

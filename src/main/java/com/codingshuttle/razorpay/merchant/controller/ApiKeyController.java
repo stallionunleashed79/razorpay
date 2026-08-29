@@ -29,7 +29,7 @@ public class ApiKeyController {
     @GetMapping
     public ResponseEntity<List<ApiKeyResponse>> getByMerchantId(@PathVariable UUID merchantId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-                apiKeyService.getByMerchantId(merchantId));
+                apiKeyService.listByMerchantId(merchantId));
     }
 
     @PostMapping(value="/{keyId}/revoke")
