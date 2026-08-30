@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "merchant")
+@Table(name = "merchant", indexes = {
+        @Index(name = "idx_merchant_email", columnList = "email"),
+        @Index(name = "idx_merchant_status", columnList = "status")
+})
 @Getter
 @Setter
 @Builder

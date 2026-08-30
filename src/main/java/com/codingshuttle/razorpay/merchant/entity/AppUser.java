@@ -7,7 +7,10 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "app_user",
+    indexes = {
+        @Index(name = "idx_app_user_merchant_role", columnList = "merchant_id, role"),
+    })
 @Getter
 @Setter
 @Builder
