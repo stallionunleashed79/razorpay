@@ -14,7 +14,9 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "order_record")
+@Table(name = "order_record", indexes = {
+        @Index(name = "idx_order_record_merchant", columnList = "merchant_id")
+})
 @Data
 @Builder
 @AllArgsConstructor
