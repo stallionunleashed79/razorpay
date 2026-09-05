@@ -24,7 +24,7 @@ public class AppUser extends BaseAuditEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "marchant_id", nullable = false)
+    @JoinColumn(name = "merchant_id", nullable = false)
     private Merchant merchant;
 
     @Column(unique = true, nullable = false)
