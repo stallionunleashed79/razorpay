@@ -1,6 +1,7 @@
 package com.codingshuttle.razorpay.payment.entity;
 
 
+import com.codingshuttle.razorpay.common.entity.BaseAuditEntity;
 import com.codingshuttle.razorpay.common.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentTransitionLog {
+public class PaymentTransitionLog extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

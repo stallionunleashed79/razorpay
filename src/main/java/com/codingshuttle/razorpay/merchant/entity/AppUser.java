@@ -1,5 +1,6 @@
 package com.codingshuttle.razorpay.merchant.entity;
 
+import com.codingshuttle.razorpay.common.entity.BaseAuditEntity;
 import com.codingshuttle.razorpay.common.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
