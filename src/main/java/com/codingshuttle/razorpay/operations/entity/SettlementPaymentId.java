@@ -1,5 +1,6 @@
 package com.codingshuttle.razorpay.operations.entity;
 
+import com.codingshuttle.razorpay.common.entity.BaseAuditEntity;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SettlementPaymentId implements Serializable {
+public class SettlementPaymentId extends BaseAuditEntity implements Serializable  {
 
     @Column(name = "settlement_id", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)

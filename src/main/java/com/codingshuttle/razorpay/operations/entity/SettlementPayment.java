@@ -1,5 +1,6 @@
 package com.codingshuttle.razorpay.operations.entity;
 
+import com.codingshuttle.razorpay.common.entity.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SettlementPayment {
+public class SettlementPayment extends BaseAuditEntity {
 
     @EmbeddedId
     private SettlementPaymentId settlementPaymentId;
