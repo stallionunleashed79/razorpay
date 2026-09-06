@@ -2,10 +2,12 @@ package com.codingshuttle.razorpay.payment.gateway.dto;
 
 import com.codingshuttle.razorpay.common.entity.Money;
 import com.codingshuttle.razorpay.common.enums.PaymentMethod;
+import lombok.Builder;
 
 import java.util.Map;
 import java.util.UUID;
 
+@Builder
 public record PaymentRequest(
         UUID paymentId,
         UUID orderId,
