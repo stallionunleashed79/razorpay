@@ -2,6 +2,7 @@ package com.codingshuttle.razorpay.payment.service.impl;
 
 import com.codingshuttle.razorpay.common.enums.OrderStatus;
 import com.codingshuttle.razorpay.common.exception.BusinessRuleViolationException;
+import com.codingshuttle.razorpay.common.exception.ResourceNotFoundException;
 import com.codingshuttle.razorpay.payment.dto.request.CreateOrderRequest;
 import com.codingshuttle.razorpay.payment.dto.response.OrderResponse;
 import com.codingshuttle.razorpay.payment.dto.response.PaymentResponse;
@@ -61,16 +62,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse getById(UUID merchantId, UUID orderId) {
         final OrderRecord orderRecord = orderRepository.findByIdAndMerchantId(orderId, merchantId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found for the given merchant and order ID."));
+                .orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
         return orderMapper.toResponse(orderRecord);
-
     }
 
     @Override
     @Transactional
     public OrderResponse cancel(UUID merchantId, UUID orderId) {
         final OrderRecord orderRecord = orderRepository.findByIdAndMerchantId(orderId, merchantId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found for the given merchant and order ID."));
+                .orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
         if (orderRecord.getOrderStatus() == OrderStatus.CANCELLED || orderRecord.getOrderStatus() == OrderStatus.PAID) {
             throw new BusinessRuleViolationException("Order cannot be cancelled as it is already " + orderRecord.getOrderStatus(),
                     "ORDER_CANNOT_BE_CANCELLED");
@@ -83,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<PaymentResponse> listPayments(final UUID merchantId, final UUID orderId) {
         orderRepository.findByIdAndMerchantId(orderId, merchantId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found for the given merchant and order ID."));
+                .orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
         final List<Payment> payments = paymentRepository.findByOrder_Id(orderId);
         return paymentMapper.toResponseList(payments);
     }
