@@ -16,7 +16,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SettlementPaymentId extends BaseAuditEntity implements Serializable  {
+public class SettlementPaymentId implements Serializable  {
 
     @Column(name = "settlement_id", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SettlementPayment {
+public class SettlementPayment extends BaseAuditEntity {
 
     @EmbeddedId
     private SettlementPaymentId settlementPaymentId;
