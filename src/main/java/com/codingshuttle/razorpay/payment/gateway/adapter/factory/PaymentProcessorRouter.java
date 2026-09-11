@@ -1,6 +1,7 @@
 package com.codingshuttle.razorpay.payment.gateway.adapter.factory;
 
 import com.codingshuttle.razorpay.common.enums.PaymentMethod;
+import com.codingshuttle.razorpay.common.exception.BusinessRuleViolationException;
 import com.codingshuttle.razorpay.payment.processor.PaymentProcessor;
 import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorRequest;
 import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorResponse;
@@ -17,6 +18,9 @@ public class PaymentProcessorRouter {
 
     public PaymentProcessorResponse charge(PaymentProcessorRequest paymentProcessorRequest) {
         final PaymentProcessor paymentProcessor = paymentProcessorMap.get(paymentProcessorRequest.method());
+        if (paymentProcessor == null) {
+            throw new IllegalArgumentException("Unknown payment method: " + paymentProcessorRequest.method());
+        }
         return paymentProcessor.charge(paymentProcessorRequest);
     }
 }
