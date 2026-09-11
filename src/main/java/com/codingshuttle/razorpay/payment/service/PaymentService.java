@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface PaymentService {
 
-    PaymentResponse initiatePayment(UUID merchantId, PaymentInitRequest paymentInitRequest) throws Exception;
+    PaymentResponse initiatePayment(UUID merchantId, PaymentInitRequest paymentInitRequest);
 }
