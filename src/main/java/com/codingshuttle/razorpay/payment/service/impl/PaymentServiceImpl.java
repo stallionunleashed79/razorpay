@@ -8,10 +8,10 @@ import com.codingshuttle.razorpay.payment.dto.request.PaymentInitRequest;
 import com.codingshuttle.razorpay.payment.dto.response.PaymentResponse;
 import com.codingshuttle.razorpay.payment.entity.OrderRecord;
 import com.codingshuttle.razorpay.payment.entity.Payment;
-import com.codingshuttle.razorpay.payment.gateway.adapter.PaymentAdapter;
 import com.codingshuttle.razorpay.payment.gateway.adapter.factory.PaymentAdapterRouter;
 import com.codingshuttle.razorpay.payment.gateway.dto.PaymentRequest;
 import com.codingshuttle.razorpay.payment.gateway.dto.PaymentResult;
+import com.codingshuttle.razorpay.payment.mapper.PaymentMapper;
 import com.codingshuttle.razorpay.payment.repository.OrderRepository;
 import com.codingshuttle.razorpay.payment.repository.PaymentRepository;
 import com.codingshuttle.razorpay.payment.service.PaymentService;
@@ -28,6 +28,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentAdapterRouter paymentAdapterRouter;
+    private final PaymentMapper paymentMapper;
 
     @Override
     @Transactional
@@ -75,6 +76,8 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setErrorDescription(failure.errorDescription());
             }
         }
-        return null;
+        paymentRepository.save(payment);
+        orderRepository.save(orderRecord);
+        return paymentMapper.toResponse(payment);
     }
 }
