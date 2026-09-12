@@ -60,7 +60,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .methodDetails(paymentInitRequest.methodDetails())
                 .build();
 
-        final PaymentResult paymentAdapter = paymentAdapterRouter.initiate(
+        final PaymentResult paymentResult = paymentAdapterRouter.initiate(
                 paymentRequest
         );
         return null;
