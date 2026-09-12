@@ -9,8 +9,9 @@ import com.codingshuttle.razorpay.payment.dto.response.PaymentResponse;
 import com.codingshuttle.razorpay.payment.entity.OrderRecord;
 import com.codingshuttle.razorpay.payment.entity.Payment;
 import com.codingshuttle.razorpay.payment.gateway.adapter.PaymentAdapter;
-import com.codingshuttle.razorpay.payment.gateway.adapter.factory.PaymentAdapterFactory;
+import com.codingshuttle.razorpay.payment.gateway.adapter.factory.PaymentAdapterRouter;
 import com.codingshuttle.razorpay.payment.gateway.dto.PaymentRequest;
+import com.codingshuttle.razorpay.payment.gateway.dto.PaymentResult;
 import com.codingshuttle.razorpay.payment.repository.OrderRepository;
 import com.codingshuttle.razorpay.payment.repository.PaymentRepository;
 import com.codingshuttle.razorpay.payment.service.PaymentService;
@@ -26,7 +27,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
-    private final PaymentAdapterFactory paymentAdapterFactory;
+    private final PaymentAdapterRouter paymentAdapterRouter;
 
     @Override
     @Transactional
@@ -59,10 +60,9 @@ public class PaymentServiceImpl implements PaymentService {
                 .methodDetails(paymentInitRequest.methodDetails())
                 .build();
 
-        final PaymentAdapter paymentAdapter = paymentAdapterFactory.getAdapter(
-                paymentInitRequest.paymentMethod()
+        final PaymentResult paymentAdapter = paymentAdapterRouter.initiate(
+                paymentRequest
         );
-        paymentAdapter.initiatePayment(paymentRequest);
         return null;
     }
 }
