@@ -44,7 +44,11 @@ public class Payment extends BaseAuditEntity {
     @Column(nullable = false, length = 30)
     private PaymentStatus status;
 
+    @Column(length = 100)
     private String bankReference;
+
+    @Column(length = 100)
+    private String processorReference;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)

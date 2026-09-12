@@ -63,6 +63,18 @@ public class PaymentServiceImpl implements PaymentService {
         final PaymentResult paymentResult = paymentAdapterRouter.initiate(
                 paymentRequest
         );
+
+        switch (paymentResult) {
+            case PaymentResult.Pending pending -> {
+                payment.setStatus(PaymentStatus.CREATED);
+                payment.setBankReference(pending.registrationRef());
+            }
+            case PaymentResult.Failure failure -> {
+                payment.setStatus(PaymentStatus.FAILED);
+                payment.setErrorCode(failure.errorCode());
+                payment.setErrorDescription(failure.errorDescription());
+            }
+        }
         return null;
     }
 }
