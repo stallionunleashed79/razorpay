@@ -68,7 +68,7 @@ public class PaymentServiceImpl implements PaymentService {
         switch (paymentResult) {
             case PaymentResult.Pending pending -> {
                 payment.setStatus(PaymentStatus.CREATED);
-                payment.setBankReference(pending.registrationRef());
+                payment.setProcessorReference(pending.registrationRef());
             }
             case PaymentResult.Failure failure -> {
                 payment.setStatus(PaymentStatus.FAILED);
