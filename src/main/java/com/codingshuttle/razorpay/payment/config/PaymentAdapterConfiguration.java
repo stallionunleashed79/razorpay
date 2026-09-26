@@ -16,14 +16,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentAdapterConfiguration {
 
-    private final PaymentProcessorRouter paymentProcessorRouter;
+    private final NetBankingAdapter netBankingAdapter;
+    private final CardPaymentAdapter cardPaymentAdapter;
+    private final UPIPaymentAdapter upiPaymentAdapter;
 
     @Bean
     public Map<PaymentMethod, PaymentAdapter> paymentAdapterMap() {
         return Map.of(
-                PaymentMethod.CARD, new CardPaymentAdapter(),
-                PaymentMethod.NETBANKING, new NetBankingAdapter(paymentProcessorRouter),
-                PaymentMethod.UPI, new UPIPaymentAdapter()
+                PaymentMethod.CARD, cardPaymentAdapter,
+                PaymentMethod.NETBANKING, netBankingAdapter,
+                PaymentMethod.UPI, upiPaymentAdapter
         );
     }
 
