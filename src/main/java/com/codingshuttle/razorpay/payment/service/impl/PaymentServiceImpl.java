@@ -92,7 +92,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponse capture(final UUID merchantId, final UUID paymentId) {
         Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
-        payment.setStatus(PaymentStatus.CAPTURING);
+        payment.setStatus(PaymentStatus.CAPTURING); //TODO - STATE MACHINE IMPLEMENTATION
         final PaymentResult paymentResult = paymentAdapterRouter.capture(payment.getPaymentMethod(),
                 paymentId);
         switch (paymentResult) {
