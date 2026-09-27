@@ -90,7 +90,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponse capture(final UUID merchantId, final UUID paymentId) {
-        final Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId)
+        Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
         payment.setStatus(PaymentStatus.CAPTURING);
         final PaymentResult paymentResult = paymentAdapterRouter.capture(payment.getPaymentMethod(),
@@ -113,7 +113,7 @@ public class PaymentServiceImpl implements PaymentService {
                 log.info("Payment {} captured at {}", paymentId, payment.getCapturedAt());
             }
         }
-        paymentRepository.save(payment);
+        payment = paymentRepository.save(payment);
         return paymentMapper.toResponse(payment);
     }
 }
