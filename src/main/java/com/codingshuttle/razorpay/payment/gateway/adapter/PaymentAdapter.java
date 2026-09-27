@@ -10,6 +10,8 @@ import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorResponse
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Slf4j
 public abstract class PaymentAdapter {
@@ -41,6 +43,10 @@ public abstract class PaymentAdapter {
             log.error("Error initiating net banking payment for payment Id: {}", paymentRequest.paymentId(), e);
             return new PaymentResult.Failure("NETBANKING_INIT_ERROR", "Error initiating net banking payment.");
         }
+    }
+
+    public PaymentResult capture(UUID paymentId) {
+        return new PaymentResult.Success(String.format("%s_REF", getPaymentMethod().name()));
     }
 }
 

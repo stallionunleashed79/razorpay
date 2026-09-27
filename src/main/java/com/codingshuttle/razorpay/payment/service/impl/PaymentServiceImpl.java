@@ -16,13 +16,16 @@ import com.codingshuttle.razorpay.payment.repository.OrderRepository;
 import com.codingshuttle.razorpay.payment.repository.PaymentRepository;
 import com.codingshuttle.razorpay.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
     private final OrderRepository orderRepository;
@@ -82,6 +85,35 @@ public class PaymentServiceImpl implements PaymentService {
         }
         paymentRepository.save(payment);
         orderRepository.save(orderRecord);
+        return paymentMapper.toResponse(payment);
+    }
+
+    @Override
+    public PaymentResponse capture(final UUID merchantId, final UUID paymentId) {
+        final Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
+        payment.setStatus(PaymentStatus.CAPTURING);
+        final PaymentResult paymentResult = paymentAdapterRouter.capture(payment.getPaymentMethod(),
+                paymentId);
+        switch (paymentResult) {
+            case PaymentResult.Pending pending -> {
+                payment.setStatus(PaymentStatus.CAPTURED);
+                payment.setProcessorReference(pending.registrationRef());
+            }
+            case PaymentResult.Failure failure -> {
+                payment.setStatus(PaymentStatus.AUTHORIZED);
+                payment.setErrorCode(failure.errorCode());
+                payment.setErrorDescription(failure.errorDescription());
+                log.warn("Payment {} captured failed with error code {}", paymentId, failure.errorCode());
+            }
+            case PaymentResult.Success success -> {
+                payment.setBankReference(success.bankReference());
+                payment.setStatus(PaymentStatus.CAPTURED);
+                payment.setCapturedAt(LocalDateTime.now());
+                log.info("Payment {} captured at {}", paymentId, payment.getCapturedAt());
+            }
+        }
+        paymentRepository.save(payment);
         return paymentMapper.toResponse(payment);
     }
 }
