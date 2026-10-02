@@ -9,7 +9,7 @@ public class InvalidStateTransitionException extends RuntimeException {
     private final String paymentEvent;
 
     public InvalidStateTransitionException(final String paymentStatus, final String paymentEvent) {
-        super("Invalid transition: " + paymentStatus + " -> " + paymentEvent);
+        super("Invalid transition from: " + paymentStatus + " with event " + paymentEvent);
         this.paymentStatus = paymentStatus;
         this.paymentEvent = paymentEvent;
     }
