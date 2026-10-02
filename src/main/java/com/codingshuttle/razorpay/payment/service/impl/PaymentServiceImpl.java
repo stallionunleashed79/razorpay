@@ -8,6 +8,7 @@ import com.codingshuttle.razorpay.payment.dto.request.PaymentInitRequest;
 import com.codingshuttle.razorpay.payment.dto.response.PaymentResponse;
 import com.codingshuttle.razorpay.payment.entity.OrderRecord;
 import com.codingshuttle.razorpay.payment.entity.Payment;
+import com.codingshuttle.razorpay.payment.entity.PaymentEvent;
 import com.codingshuttle.razorpay.payment.gateway.adapter.factory.PaymentAdapterRouter;
 import com.codingshuttle.razorpay.payment.gateway.dto.PaymentRequest;
 import com.codingshuttle.razorpay.payment.gateway.dto.PaymentResult;
@@ -15,6 +16,7 @@ import com.codingshuttle.razorpay.payment.mapper.PaymentMapper;
 import com.codingshuttle.razorpay.payment.repository.OrderRepository;
 import com.codingshuttle.razorpay.payment.repository.PaymentRepository;
 import com.codingshuttle.razorpay.payment.service.PaymentService;
+import com.codingshuttle.razorpay.payment.service.PaymentTransitionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentAdapterRouter paymentAdapterRouter;
     private final PaymentMapper paymentMapper;
+    private final PaymentTransitionService paymentTransitionService;
 
     @Override
     @Transactional
@@ -71,16 +74,19 @@ public class PaymentServiceImpl implements PaymentService {
         switch (paymentResult) {
             case PaymentResult.Pending pending -> {
                 payment.setStatus(PaymentStatus.CREATED);
+                paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_ATTEMPT);
                 payment.setProcessorReference(pending.registrationRef());
             }
             case PaymentResult.Failure failure -> {
                 payment.setStatus(PaymentStatus.FAILED);
+                paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_FAIL);
                 payment.setErrorCode(failure.errorCode());
                 payment.setErrorDescription(failure.errorDescription());
             }
             case PaymentResult.Success success -> {
                 payment.setBankReference(success.bankReference());
                 payment.setStatus(PaymentStatus.CREATED);
+                paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_SUCCESS);
             }
         }
         paymentRepository.save(payment);
@@ -92,16 +98,19 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponse capture(final UUID merchantId, final UUID paymentId) {
         Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
-        payment.setStatus(PaymentStatus.CAPTURING); //TODO - STATE MACHINE IMPLEMENTATION
+        payment.setStatus(PaymentStatus.CAPTURING);
+        paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_REQUEST);
         final PaymentResult paymentResult = paymentAdapterRouter.capture(payment.getPaymentMethod(),
                 paymentId);
         switch (paymentResult) {
             case PaymentResult.Pending pending -> {
                 payment.setStatus(PaymentStatus.CAPTURED);
+                paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_REQUEST);
                 payment.setProcessorReference(pending.registrationRef());
             }
             case PaymentResult.Failure failure -> {
                 payment.setStatus(PaymentStatus.AUTHORIZED);
+                paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_FAIL);
                 payment.setErrorCode(failure.errorCode());
                 payment.setErrorDescription(failure.errorDescription());
                 log.warn("Payment {} captured failed with error code {}", paymentId, failure.errorCode());
@@ -109,6 +118,7 @@ public class PaymentServiceImpl implements PaymentService {
             case PaymentResult.Success success -> {
                 payment.setBankReference(success.bankReference());
                 payment.setStatus(PaymentStatus.CAPTURED);
+                paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_SUCCESS);
                 payment.setCapturedAt(LocalDateTime.now());
                 log.info("Payment {} captured at {}", paymentId, payment.getCapturedAt());
             }
