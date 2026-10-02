@@ -1,6 +1,7 @@
 package com.codingshuttle.razorpay.payment.statemachine;
 
 import com.codingshuttle.razorpay.common.enums.PaymentStatus;
+import com.codingshuttle.razorpay.common.exception.InvalidStateTransitionException;
 import com.codingshuttle.razorpay.payment.entity.PaymentEvent;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,7 @@ public class PaymentStateMachine {
         Transition transition = new Transition(currentState, event);
         PaymentStatus nextState = TRANSITIONS.get(transition);
         if (nextState == null) {
-            throw new IllegalArgumentException("Invalid transition: " + currentState + " -> " + event);
+            throw new InvalidStateTransitionException(currentState.name(), event.name());
         }
         return nextState;
     }
