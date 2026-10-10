@@ -18,7 +18,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    UUID merchantId = UUID.fromString("499dc8d8-e552-4782-a707-8b2bbf80b9b5");
+    UUID merchantId = UUID.fromString("499dc8d8-e552-4782-a707-8b2bbf80b9b5"); //TODO REPLACE WITH CLIENT ID AFTER SPRING SECURITY
 
     @PostMapping
     public ResponseEntity<PaymentResponse> initiatePayment(@Valid @RequestBody PaymentInitRequest paymentInitRequest) {
