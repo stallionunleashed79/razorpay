@@ -1,9 +1,6 @@
 package com.codingshuttle.razorpay.vault.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.LuhnCheck;
 
 import java.util.UUID;
@@ -28,6 +25,9 @@ public record TokenizeRequest(
         @NotBlank(message = "Expiry year is required")
         @Pattern(regexp = "^[0-9]{4}$", message = "Expiry year must be 4 digits")
         Integer expiryYear,
-        UUID customerId
+        UUID customerId,
+
+        @Size(min = 3, message = "Card holder name should atleast be 3 characters")
+        String cardHolderName
 ) {
 }
