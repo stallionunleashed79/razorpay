@@ -27,8 +27,6 @@ public record TokenizeRequest(
 
         @NotBlank(message = "Expiry year is required")
         @Pattern(regexp = "^[0-9]{4}$", message = "Expiry year must be 4 digits")
-        @Min(value = 1, message = "Expiry year must be between 01 and 12")
-        @Max(value = 12, message = "Expiry year must be between 01 and 12")
         Integer expiryYear,
         UUID customerId
 ) {
