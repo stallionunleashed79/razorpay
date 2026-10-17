@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(
-        validatedBy = {}
+        validatedBy = { ExpiryYearValidator.class }
 )
 public @interface ExpiryYear {
 
