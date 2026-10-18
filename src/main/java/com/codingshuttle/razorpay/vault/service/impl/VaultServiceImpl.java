@@ -30,7 +30,7 @@ public class VaultServiceImpl implements VaultService {
     private final VaultCardRepository vaultCardRepository;
     private final CardTokenRepository cardTokenRepository;
     private final VaultEncryptionConfig vaultEncryptionConfig;
-    private final BytesEncryptor bytesEncryptor;
+    private final BytesEncryptor dekEncryptor;
 
     final UUID merchantId = UUID.fromString("499dc8d8-e552-4782-a707-8b2bbf80b9b5"); //TODO - Replace with id from merchant context
 
@@ -45,7 +45,7 @@ public class VaultServiceImpl implements VaultService {
         byte[] encryptedPan = VaultUtils.panEncryptor(dek).encrypt(pan.getBytes(
                 StandardCharsets.UTF_8
         ));
-        byte[] encryptedDek = bytesEncryptor.encrypt(dek);
+        byte[] encryptedDek = dekEncryptor.encrypt(dek);
         final VaultCard vaultCard = VaultCard.builder()
                 .brand(cardBand.name())
                 .lastFour(lastFourDigits)

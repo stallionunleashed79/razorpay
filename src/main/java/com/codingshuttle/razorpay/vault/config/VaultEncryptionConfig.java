@@ -14,9 +14,8 @@ public class VaultEncryptionConfig {
     @Value("${vault.encryption.master-key}")
     private String masterKey;
 
-
     @Bean
-    public BytesEncryptor decrypter() {
+    public BytesEncryptor dekEncrypter() {
         final byte[] masterKeyBytes = Base64.getDecoder().decode(masterKey);
         return VaultUtils.panEncryptor(masterKeyBytes);
     }
