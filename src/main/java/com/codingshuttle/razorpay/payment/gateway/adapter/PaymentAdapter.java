@@ -17,6 +17,7 @@ import java.util.UUID;
 public abstract class PaymentAdapter {
 
     protected final PaymentProcessorRouter paymentProcessorRouter;
+
     protected abstract PaymentMethod getPaymentMethod();
 
     // The single, unified logic flow shared by ALL subclasses

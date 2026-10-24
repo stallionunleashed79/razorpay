@@ -1,6 +1,11 @@
 package com.codingshuttle.razorpay.vault.service.impl;
 
+import com.codingshuttle.razorpay.common.entity.Money;
+import com.codingshuttle.razorpay.common.exception.ResourceNotFoundException;
 import com.codingshuttle.razorpay.common.util.RandomizerUtil;
+import com.codingshuttle.razorpay.payment.gateway.adapter.factory.PaymentProcessorRouter;
+import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorRequest;
+import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorResponse;
 import com.codingshuttle.razorpay.vault.config.VaultEncryptionConfig;
 import com.codingshuttle.razorpay.vault.dto.TokenizeRequest;
 import com.codingshuttle.razorpay.vault.dto.TokenizeResponse;
@@ -20,6 +25,8 @@ import com.codingshuttle.razorpay.common.enums.CardBrand;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -33,6 +40,7 @@ public class VaultServiceImpl implements VaultService {
     private final BytesEncryptor dekEncryptor;
 
     final UUID merchantId = UUID.fromString("499dc8d8-e552-4782-a707-8b2bbf80b9b5"); //TODO - Replace with id from merchant context
+    private final PaymentProcessorRouter paymentProcessorRouter;
 
     @Override
     @Transactional
@@ -72,6 +80,25 @@ public class VaultServiceImpl implements VaultService {
                 .expiryYear(tokenizeRequest.expiryYear())
                 .token(token)
                 .build();
+    }
+
+    @Override
+    public PaymentProcessorResponse charge(UUID paymentId, String token, Money amount, Map<String, Object> methodDetails) {
+        final CardToken cardToken = cardTokenRepository.findByTokenAndRevokedAtIsNull(token).orElseThrow(() ->
+                new ResourceNotFoundException("CardToken", token));
+        final VaultCard vaultCard = cardToken.getVaultCard();
+        byte[] panBytes = null;
+        byte[] dek = dekEncryptor.decrypt(vaultCard.getEncryptedDek());
+        panBytes = VaultUtils.panEncryptor(dek).decrypt(vaultCard.getEncryptedPan());
+        final String pan = new String(panBytes, StandardCharsets.UTF_8);
+        final String expiry = vaultCard.getExpiryMonth() + "/" + vaultCard.getExpiryYear();
+        final PaymentProcessorRequest paymentProcessorRequest =
+                PaymentProcessorRequest.card(paymentId, amount, pan, expiry,
+                        methodDetails);
+        final PaymentProcessorResponse response = paymentProcessorRouter.charge(paymentProcessorRequest);
+        log.info("Vault charge registered, token={}", token.substring(0, 4));
+        Arrays.fill(panBytes, (byte) 0);
+        return response;
     }
 
     private CardBrand resolveBrand(final String pan) {
