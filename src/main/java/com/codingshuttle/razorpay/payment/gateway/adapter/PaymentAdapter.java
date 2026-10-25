@@ -31,19 +31,22 @@ public abstract class PaymentAdapter {
                     paymentRequest.amount(), paymentRequest.methodDetails());
             final PaymentProcessorResponse paymentProcessorResponse = paymentProcessorRouter.charge(
                     paymentProcessorRequest);
-
-            return switch (paymentProcessorResponse) {
-                case PaymentProcessorResponse.Failure failure -> new PaymentResult.Failure(
-                        failure.errorCode(), failure.errorDescription());
-                case PaymentProcessorResponse.Pending pending -> new PaymentResult.Pending(
-                        pending.processorReference());
-                case PaymentProcessorResponse.Success success -> new PaymentResult.Success(
-                        success.bankReference());
-            };
+            return getPaymentResult(paymentProcessorResponse);
         } catch (Exception e) {
             log.error("Error initiating net banking payment for payment Id: {}", paymentRequest.paymentId(), e);
             return new PaymentResult.Failure("NETBANKING_INIT_ERROR", "Error initiating net banking payment.");
         }
+    }
+
+    protected PaymentResult getPaymentResult(PaymentProcessorResponse paymentProcessorResponse) {
+        return switch (paymentProcessorResponse) {
+            case PaymentProcessorResponse.Failure failure -> new PaymentResult.Failure(
+                    failure.errorCode(), failure.errorDescription());
+            case PaymentProcessorResponse.Pending pending -> new PaymentResult.Pending(
+                    pending.processorReference());
+            case PaymentProcessorResponse.Success success -> new PaymentResult.Success(
+                    success.bankReference());
+        };
     }
 
     public PaymentResult capture(UUID paymentId) {

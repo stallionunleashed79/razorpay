@@ -11,7 +11,7 @@ import java.util.Base64;
 @Configuration
 public class VaultEncryptionConfig {
 
-    @Value("${vault.encryption.master-key}")
+    @Value("${vault.master-key}")
     private String masterKey;
 
     @Bean
