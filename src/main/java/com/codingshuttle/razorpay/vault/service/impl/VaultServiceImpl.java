@@ -88,17 +88,24 @@ public class VaultServiceImpl implements VaultService {
                 new ResourceNotFoundException("CardToken", token));
         final VaultCard vaultCard = cardToken.getVaultCard();
         byte[] panBytes = null;
-        byte[] dek = dekEncryptor.decrypt(vaultCard.getEncryptedDek());
-        panBytes = VaultUtils.panEncryptor(dek).decrypt(vaultCard.getEncryptedPan());
-        final String pan = new String(panBytes, StandardCharsets.UTF_8);
-        final String expiry = vaultCard.getExpiryMonth() + "/" + vaultCard.getExpiryYear();
-        final PaymentProcessorRequest paymentProcessorRequest =
-                PaymentProcessorRequest.card(paymentId, amount, pan, expiry,
-                        methodDetails);
-        final PaymentProcessorResponse response = paymentProcessorRouter.charge(paymentProcessorRequest);
-        log.info("Vault charge registered, token={}", token.substring(0, 4));
-        Arrays.fill(panBytes, (byte) 0);
-        return response;
+        try {
+            byte[] dek = dekEncryptor.decrypt(vaultCard.getEncryptedDek());
+            panBytes = VaultUtils.panEncryptor(dek).decrypt(vaultCard.getEncryptedPan());
+            final String pan = new String(panBytes, StandardCharsets.UTF_8);
+            final String expiry = vaultCard.getExpiryMonth() + "/" + vaultCard.getExpiryYear();
+            final PaymentProcessorRequest paymentProcessorRequest =
+                    PaymentProcessorRequest.card(paymentId, amount, pan, expiry,
+                            methodDetails);
+            final PaymentProcessorResponse response = paymentProcessorRouter.charge(paymentProcessorRequest);
+            log.info("Vault charge registered, token={}", token.substring(0, 4));
+            return response;
+        } catch (Exception e) {
+            return new PaymentProcessorResponse.Failure("VAULT_CHARGE_FAILED", e.getMessage());
+        } finally {
+            if (panBytes != null) {
+                Arrays.fill(panBytes, (byte) 0);
+            }
+        }
     }
 
     private CardBrand resolveBrand(final String pan) {
