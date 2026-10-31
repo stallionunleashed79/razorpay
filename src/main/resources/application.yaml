@@ -15,3 +15,21 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 vault:
   master-key: asdqskjkasjirejoimlsmklmalksmdkqnejijenanksnjknjnfjsadfsdfrewrfwdc
+
+payment:
+  simulator:
+    poll-interval-ms: 5000
+    chaos-mode: NORMAL
+    method:
+      CARD:
+        min-delay-seconds: 2
+        max-delay-seconds: 5
+        success-rate: 0.9
+      UPI:
+        min-delay-seconds: 1
+        max-delay-seconds: 3
+        success-rate: 0.95
+      NET_BANKING:
+        min-delay-seconds: 3
+        max-delay-seconds: 6
+        success-rate: 0.85
