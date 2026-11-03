@@ -17,6 +17,10 @@ public class SimulatorConfig {
     private ChaosMode chaosMode = ChaosMode.NORMAL;
     private Map<String, MethodSimulatorConfig> methods = new HashMap<>();
 
+    public MethodSimulatorConfig getConfigForMethod(String method) {
+        return methods.getOrDefault(method, new MethodSimulatorConfig());
+    }
+
     @Getter
     @Setter
     public static class MethodSimulatorConfig {

@@ -2,7 +2,6 @@ package com.codingshuttle.razorpay.payment.config;
 
 import com.codingshuttle.razorpay.common.enums.PaymentMethod;
 import com.codingshuttle.razorpay.payment.gateway.adapter.PaymentAdapter;
-import com.codingshuttle.razorpay.payment.gateway.adapter.factory.PaymentProcessorRouter;
 import com.codingshuttle.razorpay.payment.gateway.adapter.impl.CardPaymentAdapter;
 import com.codingshuttle.razorpay.payment.gateway.adapter.impl.NetBankingAdapter;
 import com.codingshuttle.razorpay.payment.gateway.adapter.impl.UPIPaymentAdapter;
