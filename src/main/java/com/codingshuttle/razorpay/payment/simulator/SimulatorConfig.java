@@ -19,7 +19,7 @@ public class SimulatorConfig {
 
     @Getter
     @Setter
-    private static class MethodSimulatorConfig {
+    public static class MethodSimulatorConfig {
        private Integer minDelaySeconds = 1;
        private Integer maxDelaySeconds = 5;
        private Integer successRate = 80;
