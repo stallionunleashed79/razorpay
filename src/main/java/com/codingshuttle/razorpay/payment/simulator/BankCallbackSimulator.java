@@ -38,7 +38,6 @@ public class BankCallbackSimulator {
       final SimulatorConfig.MethodSimulatorConfig methodSimulatorConfig = simulatorConfig.getConfigForMethod(
              payment.getPaymentMethod());
       final LocalDateTime dueAt = dueAt(payment, methodSimulatorConfig);
-
       if (LocalDateTime.now().isBefore(dueAt)) {
           return;
       }
