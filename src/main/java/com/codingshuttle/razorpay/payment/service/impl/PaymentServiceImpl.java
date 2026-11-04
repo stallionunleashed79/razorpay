@@ -126,4 +126,43 @@ public class PaymentServiceImpl implements PaymentService {
         payment = paymentRepository.save(payment);
         return paymentMapper.toResponse(payment);
     }
+
+    @Override
+    public void resolveAuthorization(UUID paymentId, boolean approve, String bankRef, String errorCode, String errorDescription) {
+        final Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
+        if (payment.getStatus() != PaymentStatus.AUTHORIZING) {
+            return;
+        }
+
+        final OrderRecord orderRecord = payment.getOrder();
+        if (approve) {
+            paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_SUCCESS);
+            payment.setBankReference(bankRef);
+            payment.setAuthorizedAt(LocalDateTime.now());
+
+            //Auto-capture flow
+            paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_REQUEST);
+            final PaymentResult captureResult = paymentAdapterRouter.capture(payment.getPaymentMethod(), paymentId);
+            if (captureResult instanceof PaymentResult.Success(String bankReference)) {
+                payment.setBankReference(bankReference);
+                payment.setStatus(PaymentStatus.CAPTURED);
+                paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_SUCCESS);
+                payment.setCapturedAt(LocalDateTime.now());
+                orderRecord.setOrderStatus(OrderStatus.PAID);
+            } else if (captureResult instanceof PaymentResult.Failure(String code, String description)) {
+                payment.setStatus(PaymentStatus.AUTHORIZED);
+                paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_FAIL);
+                payment.setErrorCode(code);
+                payment.setErrorDescription(description);
+            }
+        } else {
+            payment.setStatus(PaymentStatus.FAILED);
+            paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_FAIL);
+            payment.setErrorCode(errorCode);
+            payment.setErrorDescription(errorDescription);
+        }
+        paymentRepository.save(payment);
+        orderRepository.save(orderRecord);
+    }
 }
